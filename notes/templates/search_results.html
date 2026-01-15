@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Notes</title>
+</head>
+<body>
+
+<p><strong>Search query:</strong> {{ query }}</p>
+<hr>
+
+{% for row in rows %}
+    <p>{{ row }}</p>
+{% empty %}
+    <p>No results</p>
+{% endfor %}
+
+</body>
+</html>
