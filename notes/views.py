@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.db import connection
 from .models import Note
+from django.contrib.auth.models import User
+from django.contrib.auth import login,authenticate
+from django.shortcuts import redirect
 
 
 def view_note(request, note_id):
@@ -28,3 +31,31 @@ def search_notes(request):
 
     # FIX:
     # notes = Note.objects.filter(owner=request.user, title__icontains=query)
+
+def insecure_login(request):
+
+    if request.method == "GET":
+        return render(request, "login.html")
+
+    username = request.POST.get("username")
+    password = request.POST.get("password") 
+
+    # FLAW 3: BROKEN AUTHENTICATION
+    user = User.objects.filter(username=username).first()
+
+    if user:
+        login(request, user) 
+        return redirect("search_notes")
+
+    return render(request, "login.html", {
+        "error": "Invalid username or password. Please try again."
+    })
+
+    # FIX:
+    # user = authenticate(request, username=username, password=password)
+    # if user:
+    #     login(request, user)
+    #     return redirect("search_notes")
+    # return render(request, "login.html", {
+    #     "error": "Invalid username or password. Please try again."
+    # })
