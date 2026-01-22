@@ -40,7 +40,7 @@ def insecure_login(request):
     username = request.POST.get("username")
     password = request.POST.get("password") 
 
-    # FLAW 3: BROKEN AUTHENTICATION
+    # FLAW 3: IDENTIFICATION AND AUTHENTICATION FAILURES
     user = User.objects.filter(username=username).first()
 
     if user:
@@ -59,3 +59,22 @@ def insecure_login(request):
     # return render(request, "login.html", {
     #     "error": "Invalid username or password. Please try again."
     # })
+
+def admin_panel(request):
+    # FLAW 4: Insecure Design
+    users = User.objects.all()
+    return render(request, "admin.html", {
+        "users": users
+    })
+
+    # FIX:
+    # if not request.user.is_staff:
+    #     return render(request, "error.html", {
+    #         "error": "Access denied: You are not an administrator."
+    #     })
+    #
+    # users = User.objects.all()
+    # return render(request, "admin.html", {
+    #     "users": users
+    # })
+
