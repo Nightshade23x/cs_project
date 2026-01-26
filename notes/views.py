@@ -4,6 +4,7 @@ from .models import Note
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from django.shortcuts import redirect
+from django.conf import settings
 
 
 def view_note(request, note_id):
@@ -76,5 +77,33 @@ def admin_panel(request):
     # users = User.objects.all()
     # return render(request, "admin.html", {
     #     "users": users
+    # })
+
+
+def debug_info(request):
+    # FLAW 5: Security Misconfiguration
+    debug_data = {
+        "DEBUG": settings.DEBUG,
+        "DATABASE_ENGINE": settings.DATABASES["default"]["ENGINE"],
+        "DATABASE_NAME": settings.DATABASES["default"]["NAME"],
+        "SECRET_KEY": settings.SECRET_KEY,
+    }
+
+    return render(request, "debug.html", {
+        "debug_data": debug_data
+    })
+
+    # FIX:
+    # if not request.user.is_staff:
+    #     return render(request, "error.html", {
+    #         "error": "Access denied."
+    #     })
+    #
+    # debug_data = {
+    #     "DEBUG": settings.DEBUG,
+    # }
+    #
+    # return render(request, "debug.html", {
+    #     "debug_data": debug_data
     # })
 

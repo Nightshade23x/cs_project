@@ -7,4 +7,6 @@ urlpatterns = [
     path("insecure-login/", views.insecure_login, name="login"),
     path("login/", views.insecure_login, name="login"),
     path("admin-panel/", views.admin_panel, name="admin_panel"),
+    path("debug/", views.debug_info, name="debug_info"),
+
 ]
