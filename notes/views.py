@@ -107,3 +107,20 @@ def debug_info(request):
     #     "debug_data": debug_data
     # })
 
+
+def insecure_register(request):
+    if request.method == "GET":
+        return render(request, "register.html")
+
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+
+    # FIX: A02 - Cryptographic Failures
+    user = User.objects.create_user(
+        username=username,
+        password=password
+    )
+
+    return redirect("login")
+
+
