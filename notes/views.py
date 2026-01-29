@@ -19,7 +19,7 @@ def search_notes(request):
     query = request.GET.get("q", "")
     user_id = request.user.id
 
-    #FLAW 2: SQL Injection
+    #FLAW 2: Injection
     sql = f"""
         SELECT * FROM notes_note
         WHERE owner_id = {user_id}
