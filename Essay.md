@@ -1,6 +1,6 @@
 LINK: https://github.com/Nightshade23x/cs_project
 
-Installation instructions:
+**Installation instructions:**
 
 The application is a Django web application. After cloning the repository, dependencies can be installed using pip install -r requirements.txt. The server can then be started locally using python manage.py runserver in the Terminal.
 
@@ -24,6 +24,29 @@ FIX:
 note = Note.objects.get(id=note_id, owner=request.user)
 ```
 With this fix applied, attempts to access another user’s note result in a “DoesNotExist” error, as shown in the flaw-1-after-1 screenshot, confirming that access control is correctly enforced.
+
+---
+**FLAW 2: Injection**
+
+Source link:
+https://github.com/Nightshade23x/cs_project/blob/main/notes/views.py#L18-L30
+
+**Description of the flaw:**
+
+This vulnerability occurs in the search_notes function, where raw SQL is dynamically constructed using Python string interpolation. The user-provided input query is directly embedded into the SQL statement without any sanitization or parameterization. As a result, an attacker can manipulate the SQL query by injecting malicious SQL code through the search parameter.
+Because the application executes this SQL statement directly against the database, it becomes vulnerable to SQL injection attacks. An attacker could potentially bypass query restrictions, access data belonging to other users, or modify the database contents. 
+
+Impact:
+SQL injection is a critical vulnerability that can lead to unauthorized data disclosure, data modification, or complete database compromise. In real-world applications, successful exploitation could expose sensitive user information and damage the integrity and availability of the system.
+
+How to fix it:
+The vulnerability can be fixed by avoiding raw SQL queries and using Django’s ORM instead. The ORM automatically parameterizes queries and safely handles user input, preventing SQL injection. By filtering notes using Django’s query methods, user input is never directly executed as SQL.
+
+FIX:
+ ```python
+notes = Note.objects.filter(owner=request.user, title__icontains=query)
+```
+With this fix applied, user input is safely handled by the ORM, and SQL injection attacks are prevented by design. The query logic remains functionally equivalent while significantly improving the security of the application.
 
 
 
