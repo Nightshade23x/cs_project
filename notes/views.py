@@ -16,10 +16,10 @@ def view_note(request, note_id):
     # note = Note.objects.get(id=note_id, owner=request.user)
 
 def search_notes(request):
+    #FLAW 2: Injection
     query = request.GET.get("q", "")
     user_id = request.user.id
 
-    #FLAW 2: Injection
     sql = f"""
         SELECT * FROM notes_note
         WHERE owner_id = {user_id}
@@ -34,14 +34,14 @@ def search_notes(request):
     # notes = Note.objects.filter(owner=request.user, title__icontains=query)
 
 def insecure_login(request):
+     # FLAW 3: Identification and Authentication Failures
 
     if request.method == "GET":
         return render(request, "login.html")
 
     username = request.POST.get("username")
     password = request.POST.get("password") 
-
-    # FLAW 3: IDENTIFICATION AND AUTHENTICATION FAILURES
+    
     user = User.objects.filter(username=username).first()
 
     if user:
