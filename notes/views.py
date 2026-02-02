@@ -109,13 +109,14 @@ def debug_info(request):
 
 
 def insecure_register(request):
+    # FLAW 6: Cryptgoraphic Failures
     if request.method == "GET":
         return render(request, "register.html")
 
     username = request.POST.get("username")
     password = request.POST.get("password")
 
-    # FIX: A02 - Cryptographic Failures
+    # FIX:
     user = User.objects.create_user(
         username=username,
         password=password
