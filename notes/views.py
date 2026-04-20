@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db import connection
 from .models import Note
 from django.contrib.auth.models import User
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login, authenticate
 from django.shortcuts import redirect
 from django.conf import settings
 
@@ -15,8 +15,9 @@ def view_note(request, note_id):
     # FIX:
     # note = Note.objects.get(id=note_id, owner=request.user)
 
+
 def search_notes(request):
-    #FLAW 2: Injection
+    # FLAW 2: Injection
     query = request.GET.get("q", "")
     user_id = request.user.id
 
@@ -33,19 +34,20 @@ def search_notes(request):
     # FIX:
     # notes = Note.objects.filter(owner=request.user, title__icontains=query)
 
+
 def insecure_login(request):
-     # FLAW 3: Identification and Authentication Failures
+    # FLAW 3: Identification and Authentication Failures
 
     if request.method == "GET":
         return render(request, "login.html")
 
     username = request.POST.get("username")
-    password = request.POST.get("password") 
-    
+    password = request.POST.get("password")
+
     user = User.objects.filter(username=username).first()
 
     if user:
-        login(request, user) 
+        login(request, user)
         return redirect("search_notes")
 
     return render(request, "login.html", {
@@ -61,27 +63,9 @@ def insecure_login(request):
     #     "error": "Invalid username or password. Please try again."
     # })
 
-def admin_panel(request):
-    # FLAW 4: Insecure Design
-    users = User.objects.all()
-    return render(request, "admin.html", {
-        "users": users
-    })
-
-    # FIX:
-    # if not request.user.is_staff:
-    #     return render(request, "error.html", {
-    #         "error": "Access denied: You are not an administrator."
-    #     })
-    #
-    # users = User.objects.all()
-    # return render(request, "admin.html", {
-    #     "users": users
-    # })
-
 
 def debug_info(request):
-    # FLAW 5: Security Misconfiguration
+    # FLAW 4: Security Misconfiguration
     debug_data = {
         "DEBUG": settings.DEBUG,
         "DATABASE_ENGINE": settings.DATABASES["default"]["ENGINE"],
@@ -109,19 +93,24 @@ def debug_info(request):
 
 
 def insecure_register(request):
-    # FLAW 6: Cryptgoraphic Failures
+    # FLAW 5: Cryptographic Failures
     if request.method == "GET":
         return render(request, "register.html")
 
     username = request.POST.get("username")
     password = request.POST.get("password")
 
-    # FIX:
-    user = User.objects.create_user(
+    user = User(
         username=username,
         password=password
     )
+    user.save()
 
     return redirect("login")
 
-
+    # FIX:
+    # user = User.objects.create_user(
+    #     username=username,
+    #     password=password
+    # )
+    # return redirect("login")
